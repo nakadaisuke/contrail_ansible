@@ -1,0 +1,17 @@
+---
+- hosts: control
+  sudo: yes
+  tasks:
+    - name: "temporary disable supervisor control"
+      template:
+        src: "templates/override.j2"
+        dest: "/etc/init/supervisor-control.override"
+
+    - name: "temporary disable supervisor dns"
+      template:
+        src: "templates/override.j2"
+        dest: "/etc/init/supervisor-dns.override"
+
+    - name: "install contrail openstack control package"
+      apt:
+        name: "contrail-openstack-control"

@@ -1,0 +1,70 @@
+---
+- name: "change owner glance log directory"
+  file:
+    dest: "/var/log/glance"
+    state: "directory"
+    owner: "glance"
+    group: "glance"
+    recurse: yes
+
+- name: "set values to glance api config"
+  ini_file:
+    dest: "/etc/glance/glance-api.conf"
+    section: "{{ item.section }}"
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+    - { section: "DEFAULT", option: "container_formats", value: "ami,ari,aki,bare,ovf,ova,docker" }
+    - { section: "DEFAULT", option: "notifier_strategy", value: "noop" }
+    - { section: "DEFAULT", option: "rabbit_host", value: "{{ hostvars[groups['config'][0]]['contrail_address'] }}" }
+    - { section: "DEFAULT", option: "rabbit_port", value: "5672" }
+    - { section: "database", option: "connection", value: "mysql://glance:glance@{{ hostvars[groups['openstack'][0]]['contrail_address'] }}/glance?charset=utf8" }
+    - { section: "database", option: "idle_timeout", value: "180" }
+    - { section: "keystone_authtoken", option: "admin_tenant_name", value: "service" }
+    - { section: "keystone_authtoken", option: "admin_user", value: "glance" }
+    - { section: "keystone_authtoken", option: "admin_password", value: "{{ contrail_admin_password }}" }
+    - { section: "paste_deploy", option: "flavor", value: "keystone" }
+
+- name: "set values to glance registry config"
+  ini_file:
+    dest: "/etc/glance/glance-registry.conf"
+    section: "{{ item.section }}"
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+    - { section: "DEFAULT", option: "rabbit_host", value: "{{ hostvars[groups['config'][0]]['contrail_address'] }}" }
+    - { section: "DEFAULT", option: "rabbit_port", value: "5672" }
+    - { section: "database", option: "connection", value: "mysql://glance:glance@{{ hostvars[groups['openstack'][0]]['contrail_address'] }}/glance?charset=utf8" }
+    - { section: "database", option: "idle_timeout", value: "180" }
+    - { section: "keystone_authtoken", option: "admin_tenant_name", value: "service" }
+    - { section: "keystone_authtoken", option: "admin_user", value: "glance" }
+    - { section: "keystone_authtoken", option: "admin_password", value: "{{ contrail_admin_password }}" }
+    - { section: "paste_deploy", option: "flavor", value: "keystone" }
+
+- name: "change database address if first node"
+  ini_file:
+    dest: "/etc/glance/glance-{{ item }}.conf"
+    section: "database"
+    option: "connection"
+    value: "mysql://glance:glance@127.0.0.1/glance?charset=utf8"
+  with_items:
+    - "api"
+    - "registry"
+  run_once: yes
+
+- name: "sync database for glance"
+  shell: "glance-manage db_sync"
+  run_once: yes
+
+- name: "restart glance"
+  service:
+    name: "glance-{{ item }}"
+    state: "restarted"
+  with_items:
+    - "api"
+    - "registry"
+
+- name: "delete glance sqlite database"
+  file:
+    dest: "/var/lib/glance/glance.sqlite"
+    state: "absent"

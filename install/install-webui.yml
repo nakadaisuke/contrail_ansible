@@ -1,0 +1,12 @@
+---
+- hosts: webui
+  sudo: yes
+  tasks:
+    - name: "temporary disable supervisor webui"
+      template:
+        src: "templates/override.j2"
+        dest: "/etc/init/supervisor-webui.override"
+
+    - name: "install contrail openstack webui package"
+      apt:
+        name: "contrail-openstack-webui"

@@ -1,0 +1,4 @@
+---
+contrail_device: "p4p1"
+contrail_address: "10.84.50.1"
+contrail_mgmt_address: "172.27.113.85"

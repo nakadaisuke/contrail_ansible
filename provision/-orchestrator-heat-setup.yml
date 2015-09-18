@@ -1,0 +1,56 @@
+---
+- name: "change owner heat log directory"
+  file:
+    dest: "/var/log/heat"
+    state: "directory"
+    owner: "heat"
+    group: "heat"
+    recurse: yes
+
+- name: "set values to heat config"
+  ini_file:
+    dest: "/etc/heat/heat.conf"
+    section: "{{ item.section }}"
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+    - { section: "DEFAULT", option: "rpc_backend", value: "heat.openstack.common.rpc.impl_kombu" }
+    - { section: "DEFAULT", option: "rabbit_host", value: "{{ hostvars[groups['config'][0]]['contrail_address'] }}" }
+    - { section: "DEFAULT", option: "rabbit_port", value: "5672" }
+    - { section: "DEFAULT", option: "plugin_dirs", value: "/usr/lib/heat/resources" }
+    - { section: "DEFAULT", option: "heat_waitcondition_server_url", value: "http://{{ hostvars[groups['openstack'][0]]['contrail_address'] }}:8000/v1/waitcondition" }
+    - { section: "database", option: "connection", value: "mysql://heat:heat@{{ hostvars[groups['openstack'][0]]['contrail_address'] }}/heat?charset=utf8" }
+    - { section: "database", option: "idle_timeout", value: "180" }
+    - { section: "keystone_authtoken", option: "admin_tenant_name", value: "service" }
+    - { section: "keystone_authtoken", option: "admin_user", value: "heat" }
+    - { section: "keystone_authtoken", option: "admin_password", value: "{{ contrail_admin_password }}" }
+    - { section: "keystone_authtoken", option: "auth_uri", value: "http://{{ hostvars[groups['openstack'][0]]['contrail_address'] }}:5000/v2.0" }
+    - { section: "keystone_authtoken", option: "auth_protocol", value: "http" }
+    - { section: "keystone_authtoken", option: "auth_host", value: "127.0.0.1" }
+    - { section: "keystone_authtoken", option: "auth_port", value: "35357" }
+    - { section: "clients_contrail", option: "user", value: "{{ contrail_admin_user }}" }
+    - { section: "clients_contrail", option: "password", value: "{{ contrail_admin_password }}" }
+    - { section: "clients_contrail", option: "tenant", value: "admin" }
+    - { section: "clients_contrail", option: "api_server", value: "{{ hostvars[groups['config'][0]]['contrail_address'] }}" }
+    - { section: "clients_contrail", option: "api_base_url", value: "/" }
+
+- name: "change database address if first node"
+  ini_file:
+    dest: "/etc/heat/heat.conf"
+    section: "database"
+    option: "connection"
+    value: "mysql://heat:heat@127.0.0.1/heat?charset=utf8"
+  run_once: yes
+
+- name: "sync database for heat"
+  shell: "heat-manage db_sync"
+  run_once: yes
+
+- name: "restart heat"
+  service:
+    name: "heat-{{ item }}"
+    state: "restarted"
+  with_items:
+    - "api"
+    - "api-cfn"
+    - "engine"

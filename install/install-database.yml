@@ -1,0 +1,13 @@
+---
+- hosts: database
+  sudo: yes
+  tasks:
+    - name: "temporary disable supervisor database"
+      template:
+        src: "templates/override.j2"
+        dest: "/etc/init/supervisor-database.override"
+
+    - name: "install contrail openstack database package"
+      apt:
+        name: "contrail-openstack-database"
+    

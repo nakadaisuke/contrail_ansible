@@ -1,0 +1,71 @@
+---
+- hosts: all
+  sudo: yes
+  tasks:
+    - name: "copy contrail install package temporary"
+      copy:
+        src: "files/contrail-install-packages_2.20-64~juno_all.deb"
+        dest: "/tmp/contrail-install-packages_2.20-64~juno_all.deb"
+
+    - name: "install contrail install package"
+      apt:
+        deb: "/tmp/contrail-install-packages_2.20-64~juno_all.deb"
+
+    - name: "delete temporary contrail install package"
+      file:
+          dest: "/tmp/contrail-install-packages_2.20-64~juno_all.deb"
+          state: "absent"
+
+    - name: "make directory for contrail binary files"
+      file:
+        path: "/opt/contrail/bin"
+        state: "directory"
+
+    - name: "make directory for contrail repository"
+      file:
+        path: "/opt/contrail/contrail_install_repo"
+        state: "directory"
+
+    - name: "unarchive contrail packages"
+      unarchive:
+        src: "/opt/contrail/contrail_packages/contrail_debs.tgz"
+        dest: "/opt/contrail/contrail_install_repo"
+        copy: no
+
+    - name: "find required packages in advance"
+      shell: "find /opt/contrail/contrail_install_repo -name binutils_*.deb -or -name make_*.deb -or -name libdpkg-perl_*.deb -or -name dpkg-dev_*.deb -or -name patch_*.deb -type f"
+      register: required_packages
+      changed_when: no
+
+    - name: "install required packages"
+      apt:
+        deb: "{{ item }}"
+      with_items: required_packages.stdout_lines
+
+    - name: modify source list
+      lineinfile:
+        dest: "/etc/apt/sources.list"
+        line: "deb file:/opt/contrail/contrail_install_repo ./"
+        insertbefore: "BOF"
+
+    - name: "modify apt configuration"
+      lineinfile:
+        dest: "/etc/apt/apt.conf"
+        line: "APT::Get::AllowUnauthenticated \"true\";"
+        create: "yes"
+
+    - name: "copy apt preferences file"
+      shell: "cp /opt/contrail/contrail_packages/preferences /etc/apt/preferences"
+      args:
+        creates: "/etc/apt/preferences"
+
+    - name: create contrail packages list
+      shell: "dpkg-scanpackages . | gzip -9c > Packages.gz"
+      args:
+        chdir: "/opt/contrail/contrail_install_repo"
+        creates: "Packages.gz"
+
+    - name: install contrail setup package
+      apt:
+        name: "contrail-setup"
+        update_cache: yes

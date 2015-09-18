@@ -1,0 +1,5 @@
+export OS_USERNAME={{ contrail_admin_user }}
+export OS_PASSWORD={{ contrail_admin_password }}
+export OS_TENANT_NAME=admin
+export OS_AUTH_URL=http://{{ hostvars[groups['openstack'][0]]['contrail_address'] }}:5000/v2.0/
+export OS_NO_CACHE=1
