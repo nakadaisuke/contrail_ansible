@@ -37,6 +37,8 @@ system003
 
 [webui]
 system001
+system002
+system003
 
 [system]
 system001
