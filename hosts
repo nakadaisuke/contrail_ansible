@@ -1,20 +1,30 @@
 [database]
 system001
+system002
+system003
 
 [config]
 system001
+system002
+system003
 
 [control]
 system001
+system002
+system003
 
 [collector]
 system001
+system002
+system003
 
 [webui]
 system001
-
-[compute]
+system002
 system003
 
+[compute]
+system005
+
 [tsn]
-system002
+system004

@@ -2,7 +2,7 @@
 
 ## How to Use
 
-1. Copy the ``contrail-install-packages_2.20-64~juno_all.deb`` to the directory ``install/files/``.
+1. Copy the ``contrail-install-packages_x.xx-xx~xxxx_all.deb`` to the directory ``install/files/``.
 2. Modified to suit the ``hosts`` file to the environment.
 3. Modified to suit the variable file to the environment.
   - ``group_vars/all.yml`` and files in the ``host_vars/``
@@ -16,36 +16,36 @@
 
 ```
 [database]
-contrail001
-contrail002
-contrail003
+system001
+system002
+system003
 
 [config]
-contrail001
-contrail002
-contrail003
+system001
+system002
+system003
 
 [control]
-contrail001
-contrail002
-contrail003
+system001
+system002
+system003
 
 [collector]
-contrail001
-contrail002
-contrail003
+system001
+system002
+system003
 
 [webui]
-contrail001
+system001
 
-[compute]
-compute001
-compute002
-compute003
+[system]
+system001
+system002
+system003
 
 [tsn]
-contrail004
-contrail005
+system004
+system005
 ```
 
 ### Group Vars
