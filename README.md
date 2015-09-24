@@ -1,5 +1,5 @@
 # Ansible Playbook for Deploying OpenContrail
-
+This Playbook can run for only Ubuntu package.
 ## How to Use
 
 1. Copy the ``contrail-install-packages_x.xx-xx~xxxx_all.deb`` to the directory ``install/files/``.
