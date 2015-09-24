@@ -114,7 +114,39 @@
         name: "libvirt-bin"
         state: "restarted"
 
-    - include: -compute-setup.yml
+    - name: "delete values from nova config"
+      ini_file:
+        dest: "/etc/nova/nova.conf"
+        section: "{{ item.section }}"
+        option: "{{ item.option }}"
+      with_items:
+        - { section: "DEFAULT", option: "quantum_auth_strategy" }
+        - { section: "DEFAULT", option: "quantum_admin_auth_url" }
+        - { section: "DEFAULT", option: "quantum_admin_tenant_name" }
+        - { section: "DEFAULT", option: "quantum_admin_username" }
+        - { section: "DEFAULT", option: "quantum_admin_password" }
+        - { section: "DEFAULT", option: "quantum_url" }
+
+    - name: "set values to nova config"
+      ini_file:
+        dest: "/etc/nova/nova.conf"
+        section: "{{ item.section }}"
+        option: "{{ item.option }}"
+        value: "{{ item.value }}"
+      with_items:
+        - { section: "DEFAULT", option: "neutron_admin_auth_url", value: "http://{{ contrail_keystone_address }}:5000/v2.0" }
+        - { section: "DEFAULT", option: "neutron_admin_username", value: "neutron" }
+        - { section: "DEFAULT", option: "neutron_admin_password", value: "{{ contrail_admin_password }}" }
+        - { section: "DEFAULT", option: "neutron_admin_tenant_name", value: "service" }
+        - { section: "DEFAULT", option: "neutron_url", value: "http://{{ contrail_haproxy_address }}:9696/" }
+        - { section: "DEFAULT", option: "neutron_url_timeout", value: "300" }
+        - { section: "DEFAULT", option: "network_api_class", value: "nova.network.neutronv2.api.API" }
+        - { section: "DEFAULT", option: "libvirt_vif_driver", value: "nova_contrail_vif.contrailvif.VRouterVIFDriver" }
+
+    - name: "restart nova compute"
+      service:
+        name: "nova-compute"
+        state: "restarted"
 
     - name: "add vrouter to contrail"
       shell: "python /opt/contrail/utils/provision_vrouter.py --api_server_ip {{ contrail_haproxy_address }} --admin_user {{ contrail_admin_user }} --admin_password {{ contrail_admin_password }} --admin_tenant_name admin --openstack_ip {{ contrail_keystone_address }} --oper add --host_name {{ ansible_hostname }} --host_ip {{ contrail_address }}"
