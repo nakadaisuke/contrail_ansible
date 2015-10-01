@@ -40,6 +40,7 @@
     - name: "install required packages"
       apt:
         deb: "{{ item }}"
+        force: yes
       with_items: required_packages.stdout_lines
 
     - name: modify source list

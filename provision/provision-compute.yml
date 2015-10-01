@@ -109,11 +109,6 @@
         option: "server"
         value: "{{ contrail_haproxy_address }}"
 
-    - name: "restart libvirt bin"
-      service:
-        name: "libvirt-bin"
-        state: "restarted"
-
     - name: "delete values from nova config"
       ini_file:
         dest: "/etc/nova/nova.conf"
@@ -142,6 +137,21 @@
         - { section: "DEFAULT", option: "neutron_url_timeout", value: "300" }
         - { section: "DEFAULT", option: "network_api_class", value: "nova.network.neutronv2.api.API" }
         - { section: "DEFAULT", option: "libvirt_vif_driver", value: "nova_contrail_vif.contrailvif.VRouterVIFDriver" }
+
+    - name: "apply patch to nova files"
+      patch:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+      with_items:
+        - { src: "files/compute.filters.patch", dest: "/etc/nova/rootwrap.d/compute.filters" }
+        - { src: "files/model.py.patch", dest: "/usr/lib/python2.7/dist-packages/nova/network/model.py" }
+        - { src: "files/test_vif.py.patch", dest: "/usr/lib/python2.7/dist-packages/nova/tests/virt/libvirt/test_vif.py" }
+        - { src: "files/vif.py.patch", dest: "/usr/lib/python2.7/dist-packages/nova/virt/libvirt/vif.py" }
+
+    - name: "restart libvirt bin"
+      service:
+        name: "libvirt-bin"
+        state: "restarted"
 
     - name: "restart nova compute"
       service:

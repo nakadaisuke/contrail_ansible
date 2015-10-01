@@ -4,10 +4,10 @@ ansible_ssh_pass: "juniper123"
 
 contrail_keystone_address: "10.84.50.3"
 contrail_admin_user: "admin"
-contrail_admin_password: "password"
+contrail_admin_password: "juniper123"
 
 contrail_keepalived: no
-contrail_haproxy_address: "10.84.50.1" # 10.84.50.80
+contrail_haproxy_address: "10.84.50.1"
 contrail_netmask: "255.255.255.0"
 contrail_prefixlen: "24"
 contrail_gateway: "10.84.50.253"

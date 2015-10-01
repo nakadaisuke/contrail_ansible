@@ -5,7 +5,8 @@
 - include: install/install-control.yml
 - include: install/install-collector.yml
 - include: install/install-webui.yml
-- include: install/install-vrouter.yml
+- include: install/install-compute.yml
+- include: install/install-tsn.yml
 - include: install/install-interface.yml
 
 - include: provision/provision-rabbitmq.yml
