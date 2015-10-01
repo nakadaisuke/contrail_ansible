@@ -14,6 +14,8 @@ contrail_gateway: "10.84.50.253"
 
 contrail_router_asn: "64512"
 
+keystone_provision: no
+
 contrail_tor_agents:
   - name: "test01"
     address: "10.84.50.81"
