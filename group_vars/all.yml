@@ -1,34 +1,37 @@
 ---
-ansible_ssh_user: "lab"
+package: "contrail-install-packages_2.21-102~juno_all.deb"
+ansible_ssh_user: "root"
 ansible_ssh_pass: "juniper123"
 
-contrail_keystone_address: "10.84.50.3"
+contrail_keystone_address: "10.0.0.21"
 contrail_admin_user: "admin"
-contrail_admin_password: "password"
+contrail_admin_password: "juniper123"
 
-contrail_keepalived: no
-contrail_haproxy_address: "10.84.50.1" # 10.84.50.80
+contrail_keepalived: yes
+contrail_haproxy_address: "10.0.0.250" # 10.0.0.80
 contrail_netmask: "255.255.255.0"
 contrail_prefixlen: "24"
-contrail_gateway: "10.84.50.253"
+contrail_gateway: "10.0.0.1"
 
 contrail_router_asn: "64512"
 
+keystone_provision: no
+
 contrail_tor_agents:
   - name: "test01"
-    address: "10.84.50.81"
+    address: "10.0.0.81"
     ovs_protocol: "pssl"
     ovs_port: "9991"
-    tunnel_address: "10.84.50.81"
+    tunnel_address: "10.0.0.81"
     http_server_port: "9011"
     vendor_name: "Juniper"
     product_name: "QFX5100"
     tsn_names: [ "system002" ]
   - name: "test02"
-    address: "10.84.50.82"
+    address: "10.0.0.82"
     ovs_protocol: "pssl"
     ovs_port: "9992"
-    tunnel_address: "10.84.50.82"
+    tunnel_address: "10.0.0.82"
     http_server_port: "9012"
     vendor_name: "Juniper"
     product_name: "QFX5100"

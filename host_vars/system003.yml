@@ -1,4 +1,4 @@
 ---
-contrail_device: "p4p1"
+contrail_device: "eth1"
 contrail_address: "10.84.50.3"
-contrail_mgmt_address: "172.27.113.87"
+contrail_mgmt_address: "10.0.0.103"

@@ -4,16 +4,16 @@
   tasks:
     - name: "copy contrail install package temporary"
       copy:
-        src: "files/contrail-install-packages_2.20-64~juno_all.deb"
-        dest: "/tmp/contrail-install-packages_2.20-64~juno_all.deb"
+        src: "files/{{ package }}"
+        dest: "/tmp/{{ package }}"
 
     - name: "install contrail install package"
       apt:
-        deb: "/tmp/contrail-install-packages_2.20-64~juno_all.deb"
+        deb: "/tmp/{{ package }}"
 
     - name: "delete temporary contrail install package"
       file:
-          dest: "/tmp/contrail-install-packages_2.20-64~juno_all.deb"
+          dest: "/tmp/{{ package }}"
           state: "absent"
 
     - name: "make directory for contrail binary files"

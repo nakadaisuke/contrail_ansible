@@ -230,6 +230,7 @@
         OS_PASSWORD: "{{ contrail_admin_password }}"
         OS_TENANT_NAME: "admin"
       run_once: yes
+      when: keystone_provision 
 
     - name: "add neutron endpoint"
       shell: "keystone endpoint-list | grep -q $(keystone service-get 'neutron' | grep '| *id *|' | awk '{print $4}') || keystone endpoint-create --region 'RegionOne' --service 'neutron' --publicurl 'http://{{ contrail_haproxy_address }}:9696' --internal 'http://{{ contrail_haproxy_address }}:9696' --adminurl 'http://{{ contrail_haproxy_address }}:9696'"
@@ -239,6 +240,7 @@
         OS_PASSWORD: "{{ contrail_admin_password }}"
         OS_TENANT_NAME: "admin"
       run_once: yes
+      when: keystone_provision 
 
     - name: "add neutron user"
       keystone_user:
@@ -251,6 +253,7 @@
         login_password: "{{ contrail_admin_password }}"
         login_tenant_name: "admin"
       run_once: yes
+      when: keystone_provision 
 
     - name: "apply role to user"
       keystone_user:
@@ -262,3 +265,4 @@
         login_password: "{{ contrail_admin_password }}"
         login_tenant_name: "admin"
       run_once: yes
+      when: keystone_provision 
