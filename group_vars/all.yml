@@ -7,13 +7,11 @@ contrail_keystone_address: "10.0.0.21"
 contrail_admin_user: "admin"
 contrail_admin_password: "juniper123"
 
-<<<<<<< HEAD
 contrail_keepalived: yes
 contrail_haproxy_address: "10.0.0.250" # 10.0.0.80
 =======
 contrail_keepalived: no
 contrail_haproxy_address: "10.84.50.1"
->>>>>>> fac5e79d79ab34f04b82df800d052a21c6d2cc9f
 contrail_netmask: "255.255.255.0"
 contrail_prefixlen: "24"
 contrail_gateway: "10.0.0.1"
