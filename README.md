@@ -1,5 +1,12 @@
 # Ansible Playbook for Deploying OpenContrail
 This Playbook can run for only Ubuntu package.
+
+## Prerequisite
+1. Install and create user for neutron/contrail to Keystone.
+2. Install Openstack packages except Neutron.
+3. All of Hosts must be resolved its IP address by DNS or hosts.
+4. Install NTP and sync all of hosts.
+
 ## How to Use
 
 1. Copy the ``contrail-install-packages_x.xx-xx~xxxx_all.deb`` to the directory ``install/files/``.
@@ -13,7 +20,6 @@ This Playbook can run for only Ubuntu package.
 ## Sample Configuration
 
 ### Hosts
-All of Hosts must be resolved its IP address by DNS or hosts
 ```
 [database]
 system001
