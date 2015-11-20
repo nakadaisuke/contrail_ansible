@@ -109,6 +109,17 @@
         option: "server"
         value: "{{ contrail_haproxy_address }}"
 
+    - name: "restart libvirt bin"
+      service:
+        name: "libvirt-bin"
+        state: "restarted"
+
+    - name: "set value of nova to nova config"
+      template:
+        src: "templates/nova.j2"
+        dest: "/etc/nova/nova.conf"
+      when: install_nova 
+
     - name: "delete values from nova config"
       ini_file:
         dest: "/etc/nova/nova.conf"
@@ -122,12 +133,13 @@
         - { section: "DEFAULT", option: "quantum_admin_password" }
         - { section: "DEFAULT", option: "quantum_url" }
 
-    - name: "set values to nova config"
+    - name: "set values of neutron to nova config"
       ini_file:
         dest: "/etc/nova/nova.conf"
         section: "{{ item.section }}"
         option: "{{ item.option }}"
         value: "{{ item.value }}"
+        state: "present"
       with_items:
         - { section: "DEFAULT", option: "neutron_admin_auth_url", value: "http://{{ contrail_keystone_address }}:5000/v2.0" }
         - { section: "DEFAULT", option: "neutron_admin_username", value: "neutron" }
@@ -138,21 +150,6 @@
         - { section: "DEFAULT", option: "network_api_class", value: "nova.network.neutronv2.api.API" }
         - { section: "DEFAULT", option: "libvirt_vif_driver", value: "nova_contrail_vif.contrailvif.VRouterVIFDriver" }
 
-    - name: "apply patch to nova files"
-      patch:
-        src: "{{ item.src }}"
-        dest: "{{ item.dest }}"
-      with_items:
-        - { src: "files/compute.filters.patch", dest: "/etc/nova/rootwrap.d/compute.filters" }
-        - { src: "files/model.py.patch", dest: "/usr/lib/python2.7/dist-packages/nova/network/model.py" }
-        - { src: "files/test_vif.py.patch", dest: "/usr/lib/python2.7/dist-packages/nova/tests/virt/libvirt/test_vif.py" }
-        - { src: "files/vif.py.patch", dest: "/usr/lib/python2.7/dist-packages/nova/virt/libvirt/vif.py" }
-
-    - name: "restart libvirt bin"
-      service:
-        name: "libvirt-bin"
-        state: "restarted"
-
     - name: "restart nova compute"
       service:
         name: "nova-compute"
@@ -160,3 +157,19 @@
 
     - name: "add vrouter to contrail"
       shell: "python /opt/contrail/utils/provision_vrouter.py --api_server_ip {{ contrail_haproxy_address }} --admin_user {{ contrail_admin_user }} --admin_password {{ contrail_admin_password }} --admin_tenant_name admin --openstack_ip {{ contrail_keystone_address }} --oper add --host_name {{ ansible_hostname }} --host_ip {{ contrail_address }}"
+
+    - name: "reboot Server"
+      shell: "shutdown -r now"
+      async: 0
+      poll: 0
+      ignore_errors: true
+      notify: Wait for server to come back
+
+  handlers:
+    - name: "Wait for server to come back"
+      local_action:
+        module: wait_for
+          host={{ inventory_hostname }}
+          port=22
+          delay=30
+          timeout=600

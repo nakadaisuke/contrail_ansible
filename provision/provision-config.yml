@@ -95,10 +95,9 @@
         dest: "/etc/contrail/contrail-api.conf"
 
     - name: "fix up contrail api supervisord config"
-      replace:
+      template:
+        src: "templates/contrail-api-supervisord-conf.j2"
         dest: "/etc/contrail/supervisord_config_files/contrail-api.ini"
-        regexp: "91%\\(process_num\\)02d"
-        replace: "910%(process_num)01d"
 
     - name: "modify contrail api init script"
       lineinfile:
@@ -120,6 +119,11 @@
       template:
         src: "templates/contrail-svc-monitor-conf.j2"
         dest: "/etc/contrail/contrail-svc-monitor.conf"
+
+    - name: "fix up contrail discovery supervisord config"
+      template:
+        src: "templates/contrail-discovery-supervisord-conf.j2"
+        dest: "/etc/contrail/supervisord_config_files/contrail-discovery.ini"
 
     - name: "fix up contrail discovery config"
       template:

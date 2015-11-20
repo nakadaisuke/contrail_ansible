@@ -1,14 +1,15 @@
 ---
 - include: install/install-common.yml
+- include: install/install-kernel.yml
 - include: install/install-database.yml
 - include: install/install-config.yml
 - include: install/install-control.yml
 - include: install/install-collector.yml
 - include: install/install-webui.yml
 - include: install/install-compute.yml
-- include: install/install-tsn.yml
 - include: install/install-interface.yml
 
+- include: provision/provision-route.yml
 - include: provision/provision-rabbitmq.yml
 - include: provision/provision-increase-limits.yml
 - include: provision/provision-database.yml

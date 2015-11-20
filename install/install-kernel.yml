@@ -1,0 +1,40 @@
+---
+- hosts: all 
+  sudo: yes
+  tasks:
+    - name: "install Ubuntu kernel"
+      apt:
+        name: "linux-headers-3.13.0-40"
+        name: "linux-headers-3.13.0-40-generic"
+        name: "linux-image-3.13.0-40-generic"
+        name: "linux-image-extra-3.13.0-40-generic"
+      when: (kernel_install) and (ansible_kernel != "3.13.0-40-generic")
+
+    - name: "setup grub"
+      lineinfile: 
+        dest: "/etc/default/grub"
+        regexp: "GRUB_DEFAULT=.*"
+        line: "GRUB_DEFAULT='Advanced options for Ubuntu>Ubuntu, with Linux 3.13.0-40-generic'"
+      when: (kernel_install) and (ansible_kernel != "3.13.0-40-generic")
+
+    - name: "reflect grub"
+      shell: "update-grub2"
+      when: (kernel_install) and (ansible_kernel != "3.13.0-40-generic")
+
+    - name: "reboot Server"
+      shell: "shutdown -r now"
+      async: 0
+      poll: 0
+      ignore_errors: true
+      notify: Wait for server to come back
+      when: (kernel_install) and (ansible_kernel != "3.13.0-40-generic")
+
+  handlers:
+    - name: "Wait for server to come back"
+      local_action:
+        module: wait_for
+          host={{ inventory_hostname }}
+          port=22
+          delay=30
+          timeout=600
+      when: (kernel_install) and (ansible_kernel != "3.13.0-40-generic")

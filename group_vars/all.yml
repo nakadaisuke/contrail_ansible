@@ -1,24 +1,25 @@
 ---
 package: "contrail-install-packages_2.21-102~juno_all.deb"
+kernel_install: yes 
 ansible_ssh_user: "root"
 ansible_ssh_pass: "juniper123"
 
 contrail_keystone_address: "10.0.0.21"
 contrail_admin_user: "admin"
-contrail_admin_password: "juniper123"
+contrail_admin_password: "password"
 
-contrail_keepalived: yes
-contrail_haproxy_address: "10.0.0.250" # 10.0.0.80
-=======
-contrail_keepalived: no
-contrail_haproxy_address: "10.84.50.1"
+contrail_keepalived: no 
+contrail_haproxy_address: "10.0.0.22" # 10.0.0.80
 contrail_netmask: "255.255.255.0"
 contrail_prefixlen: "24"
 contrail_gateway: "10.0.0.1"
 
 contrail_router_asn: "64512"
 
+### Modify when need openstack provisioning
 keystone_provision: no
+install_nova: yes
+rabbit_password: "password"
 
 contrail_tor_agents:
   - name: "test01"

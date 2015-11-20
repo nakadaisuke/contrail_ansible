@@ -1,5 +1,5 @@
 ---
-- hosts: compute
+- hosts: [compute, tsn]
   sudo: yes
   tasks:
     - name: "temporary disable supervisor vrouter"
@@ -7,25 +7,20 @@
         src: "templates/override.j2"
         dest: "/etc/init/supervisor-vrouter.override"
 
-    - name: "check installed version of gcc 4.8 base"
-      shell: "dpkg -s gcc-4.8-base | awk '$1==\"Version:\"{print$2}'"
-      register: result
-      changed_when: no
-
-    - name: "reinstall gcc 4.8 base and dependent packages"
+    - name: "install nova-compute for contrail package"
       apt:
-        name: "{{ item }}"
-        force: yes
-      with_items:
-        - "gcc-4.8-base=4.8.2-19ubuntu1"
-        - "libquadmath0=4.8.2-19ubuntu1"
-        - "libstdc++6=4.8.2-19ubuntu1"
-        - "libgfortran3=4.8.2-19ubuntu1"
-      when: result.stderr == '' and result.stdout != '4.8.2-19ubuntu1'
+        name: "nova-compute"
+      when: install_nova
+
+    - name: "install contrail vrouter 3.13.0-40 package"
+      apt:
+        name: "contrail-vrouter-3.13.0-40-generic"
+      when: ansible_kernel == "3.13.0-40-generic"
 
     - name: "install contrail vrouter dkms package"
       apt:
         name: "contrail-vrouter-dkms"
+      when: ansible_kernel != "3.13.0-40-generic"
 
     - name: "install contrail vrouter common package"
       apt:
