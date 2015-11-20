@@ -18,7 +18,7 @@ vrrp_instance INTERNAL_1 {
 	vmac_xmit_base
 	priority 10{{ item.0 }}
 	virtual_ipaddress {
-		{{ contrail_haproxy_address }}/{{ contrail_prefixlen }} dev {{ contrail_device }}
+		{{ contrail_haproxy_address }} dev {{ contrail_device }}
 	}
 	track_script {
 		chk_haproxy

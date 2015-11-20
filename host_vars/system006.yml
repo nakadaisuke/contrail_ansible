@@ -1,6 +1,6 @@
 ---
 contrail_device: "p4p1"
-contrail_address: "10.84.50.4"
+contrail_address: "10.84.50.6"
 contrail_netmask: "255.255.255.0"
 contrail_gateway: "10.84.50.254"
-contrail_mgmt_address: "172.27.113.87"
+contrail_mgmt_address: "172.27.113.90"
